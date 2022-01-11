@@ -1,0 +1,10 @@
+{
+  "name": "proxy",
+  "private": true,
+  "scripts": {
+    "start": "node proxy.js"
+  },
+  "dependencies": {
+    "ws": "^8.4.0"
+  }
+}
