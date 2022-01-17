@@ -8,6 +8,13 @@ const PROXY_PORT = process.env['PROXY_PORT'] || 9000;
 const PROXY_HOST = process.env['PROXY_HOST'] || 'localhost';
 const SOCKET_TIMEOUT = process.env['SOCKET_TIMEOUT'] || 1000;
 
+console.log('--------------------------');
+console.log(`ORIGIN_PORT: ${ORIGIN_PORT}`);
+console.log(`ORIGIN_HOST: ${ORIGIN_HOST}`);
+console.log(`PROXY_PORT: ${PROXY_PORT}`);
+console.log(`PROXY_HOST: ${PROXY_HOST}`);
+console.log('--------------------------');
+
 const PROTOCOL_SIGNATURE = [0xfe, 0xa6, 0xb9, 0x58, 0xda, 0xfb, 0x4f, 0x5c, 0xb6, 0x20, 0xfe, 0x0a, 0xaf, 0xbd, 0x47, 0xe2];
 
 const decoder = new TextDecoder();
