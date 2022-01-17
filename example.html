@@ -6,29 +6,36 @@
 </head>
 <body>
     <script type="application/javascript">
-        async function main() {
-            const ws = new WebSocket("ws://localhost:9000");
+        const ws = new WebSocket("ws://localhost:9000");
 
-            ws.onopen = () => {
-                console.log('send message');
-                ws.send('{"id":"4cd502b3-a3af-4ff5-927e-e6ce67983ed6","command":"173cbbeb-1d81-4e01-bf3c-5d06f9c878c3","flags":2164291649,"content":null,"tags":null}');
-                ws.send('{"id":"79a07890-f3a0-44f3-a6fd-b7bbea25482e","command":"b8338344-bec9-4f7d-b8e2-b81a6d4591c7","flags":2164291649,"content":{"value":""},"tags":[]}');
+        ws.onopen = () => {
+            console.log('send message');
+            const message = {
+                id: "79a07890-f3a0-44f3-a6fd-b7bbea25482e",
+                command: "b8338344-bec9-4f7d-b8e2-b81a6d4591c7",
+                content: null,
+                webFlags: {
+                    type: "command",
+                    execStatus: "unknown",
+                    priority: "normal",
+                    contentFormat: "json",
+                },
+                tags: [],
             };
+            ws.send(JSON.stringify(message));
+        };
 
-            ws.onclose = () => {
-                console.log('closed');
-            };
+        ws.onclose = () => {
+            console.log('closed');
+        };
 
-            ws.onmessage = (message) => {
-                console.log('receive message', JSON.parse(message.data));
-            };
+        ws.onmessage = (message) => {
+            console.log('receive message', JSON.parse(message.data));
+        };
 
-            setTimeout(() => {
-                ws.close();
-            }, 5000);
-        }
-
-        main();
+        setTimeout(() => {
+            ws.close();
+        }, 5000);
     </script>
 </body>
 </html>
