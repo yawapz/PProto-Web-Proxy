@@ -1,4 +1,4 @@
-Прокси и примеры для подключения по протоколу TochkaAI через WebSocket.
+Прокси и примеры для подключения по протоколу [PProto](https://github.com/hkarel/PProtoCpp) через WebSocket.
 
 # Содержимое репозитория
 
