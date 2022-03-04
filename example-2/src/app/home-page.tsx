@@ -2,6 +2,7 @@ import { usePprotoStatus } from "../pproto/pproto-react";
 import styled from "styled-components";
 import { useEffect, useState } from "react";
 import { useTestService } from "./commands";
+import { PprotoError } from "../pproto/pproto";
 
 export const HomePage = () => {
   const status = usePprotoStatus();
@@ -27,7 +28,16 @@ export const HomePage = () => {
     try {
       await test.sendError();
     } catch (e) {
-      setAnswer(`${e}`);
+      if (e instanceof PprotoError) {
+        const errorObj = {
+          group: e.group,
+          code: e.code,
+          description: e.description,
+        };
+        setAnswer(JSON.stringify(errorObj, null, 4));
+      } else {
+        setAnswer(`${e}`);
+      }
     }
   };
 
