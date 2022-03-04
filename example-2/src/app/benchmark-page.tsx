@@ -1,10 +1,10 @@
-import { TestMessage, useTestRequest } from "./requests";
+import { TestMessage, useTestService } from "./requests";
 import { v4 as uuid } from "uuid";
 import { useState } from "react";
 import styled from "styled-components";
 
 export const BenchmarkPage = () => {
-  const testRequest = useTestRequest();
+  const test = useTestService();
   const [result, setResult] = useState("");
 
   const run = async () => {
@@ -20,7 +20,7 @@ export const BenchmarkPage = () => {
 
       for (let i = 0; i < batchSize; ++i) {
         responses.push(
-          testRequest({
+          test.sendTest({
             beginTest: false,
             endTest: false,
             uuid: uuid(),

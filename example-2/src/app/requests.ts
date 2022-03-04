@@ -1,4 +1,5 @@
 import { usePproto } from "../pproto/pproto-react";
+import { PprotoConnection } from "../pproto/pproto";
 
 export interface HelloResponse {
   value: string;
@@ -13,16 +14,19 @@ export interface TestMessage {
 const HELLO_REQUEST_TYPE = "b8338344-bec9-4f7d-b8e2-b81a6d4591c7";
 const TEST_REQUEST_TYPE = "59cb5357-80bb-4fa4-a15e-4797a535b50d";
 
-export const useHelloRequest = () => {
+export const useTestService = (): TestService => {
   const conn = usePproto();
-  return async (): Promise<HelloResponse> => {
-    return await conn.request(HELLO_REQUEST_TYPE, null, 10);
-  };
+  return new TestService(conn);
 };
 
-export const useTestRequest = () => {
-  const conn = usePproto();
-  return async (request: TestMessage): Promise<TestMessage> => {
-    return await conn.request(TEST_REQUEST_TYPE, request);
-  };
-};
+export class TestService {
+  constructor(private readonly conn: PprotoConnection) {}
+
+  async sendHello(): Promise<HelloResponse> {
+    return this.conn.request(HELLO_REQUEST_TYPE, null, 10);
+  }
+
+  async sendTest(request: TestMessage): Promise<TestMessage> {
+    return this.conn.request(TEST_REQUEST_TYPE, request);
+  }
+}

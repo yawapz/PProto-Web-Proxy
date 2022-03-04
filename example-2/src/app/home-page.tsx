@@ -1,18 +1,17 @@
-import { usePproto, usePprotoStatus } from "../pproto/pproto-react";
+import { usePprotoStatus } from "../pproto/pproto-react";
 import styled from "styled-components";
 import { useState } from "react";
-import { useHelloRequest } from "./requests";
-import { PprotoError } from "../pproto/pproto";
+import { useTestService } from "./requests";
 
 export const HomePage = () => {
   const status = usePprotoStatus();
-  const hello = useHelloRequest();
+  const test = useTestService();
   const [resp, setResp] = useState("");
 
   const sendRequest = async () => {
     setResp("Loading...");
     try {
-      const r = await hello();
+      const r = await test.sendHello();
       setResp(JSON.stringify(r, null, 4));
     } catch (e) {
       setResp(`${e}`);
