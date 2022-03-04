@@ -1,6 +1,6 @@
 import { usePprotoStatus } from "../pproto/pproto-react";
 import styled from "styled-components";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTestService } from "./requests";
 
 export const HomePage = () => {
@@ -8,7 +8,9 @@ export const HomePage = () => {
   const test = useTestService();
   const [resp, setResp] = useState("");
 
-  const sendRequest = async () => {
+  // Hello request
+
+  const sendHello = async () => {
     setResp("Loading...");
     try {
       const r = await test.sendHello();
@@ -18,12 +20,45 @@ export const HomePage = () => {
     }
   };
 
+  // Error request
+
+  const sendError = async () => {
+    setResp("Loading...");
+    try {
+      await test.sendError();
+    } catch (e) {
+      setResp(`${e}`);
+    }
+  };
+
+  // Event request
+
+  const sendEvent = async () => {
+    setResp("Loading...");
+    try {
+      await test.sendEvent();
+    } catch (e) {
+      setResp(`${e}`);
+    }
+  };
+
+  useEffect(() => {
+    const sub = test.onEvent((e) => {
+      setResp(JSON.stringify(e));
+    });
+    return () => sub.unsubscribe();
+  });
+
+  // -------------
+
   return (
     <Root>
       <Status>
         Статус: {status === "connected" ? "Подключено" : "Отключено"}
       </Status>
-      <RequestButton onClick={sendRequest}>Отправить запрос</RequestButton>
+      <RequestButton onClick={sendHello}>Hello request</RequestButton>
+      <RequestButton onClick={sendError}>Error request</RequestButton>
+      <RequestButton onClick={sendEvent}>Event request</RequestButton>
       <label>
         Ответ от сервера
         <ResultTextArea readOnly value={resp} />

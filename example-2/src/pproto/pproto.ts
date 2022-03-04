@@ -154,7 +154,7 @@ export class PprotoConnection {
   }
 }
 
-interface ProtocolMessage {
+export interface ProtocolMessage {
   id: string;
   command: string;
   content: any;
@@ -168,7 +168,7 @@ interface ProtocolMessage {
   tags: number[];
 }
 
-interface ErrorContent {
+export interface ErrorContent {
   group: number;
   code: string;
   description: string;
