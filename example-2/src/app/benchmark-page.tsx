@@ -1,4 +1,4 @@
-import { TestMessage, useTestService } from "./requests";
+import { TestMessage, useTestService } from "./commands";
 import { v4 as uuid } from "uuid";
 import { useState } from "react";
 import styled from "styled-components";
@@ -16,10 +16,10 @@ export const BenchmarkPage = () => {
     let counter = 0;
 
     while (performance.now() < t1 + testTime) {
-      const responses: Array<Promise<TestMessage>> = [];
+      const answers: Array<Promise<TestMessage>> = [];
 
       for (let i = 0; i < batchSize; ++i) {
-        responses.push(
+        answers.push(
           test.sendTest({
             beginTest: false,
             endTest: false,
@@ -28,7 +28,7 @@ export const BenchmarkPage = () => {
         );
       }
 
-      await Promise.all(responses);
+      await Promise.all(answers);
       counter += batchSize;
     }
 

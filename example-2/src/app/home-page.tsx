@@ -1,50 +1,50 @@
 import { usePprotoStatus } from "../pproto/pproto-react";
 import styled from "styled-components";
 import { useEffect, useState } from "react";
-import { useTestService } from "./requests";
+import { useTestService } from "./commands";
 
 export const HomePage = () => {
   const status = usePprotoStatus();
   const test = useTestService();
-  const [resp, setResp] = useState("");
+  const [answer, setAnswer] = useState("");
 
-  // Hello request
+  // Hello command
 
   const sendHello = async () => {
-    setResp("Loading...");
+    setAnswer("Loading...");
     try {
       const r = await test.sendHello();
-      setResp(JSON.stringify(r, null, 4));
+      setAnswer(JSON.stringify(r, null, 4));
     } catch (e) {
-      setResp(`${e}`);
+      setAnswer(`${e}`);
     }
   };
 
-  // Error request
+  // Error command
 
   const sendError = async () => {
-    setResp("Loading...");
+    setAnswer("Loading...");
     try {
       await test.sendError();
     } catch (e) {
-      setResp(`${e}`);
+      setAnswer(`${e}`);
     }
   };
 
-  // Event request
+  // Event command
 
   const sendEvent = async () => {
-    setResp("Loading...");
+    setAnswer("Loading...");
     try {
       await test.sendEvent();
     } catch (e) {
-      setResp(`${e}`);
+      setAnswer(JSON.stringify(e, null, 4));
     }
   };
 
   useEffect(() => {
     const sub = test.onEvent((e) => {
-      setResp(JSON.stringify(e));
+      setAnswer(JSON.stringify(e, null, 4));
     });
     return () => sub.unsubscribe();
   });
@@ -56,12 +56,12 @@ export const HomePage = () => {
       <Status>
         Статус: {status === "connected" ? "Подключено" : "Отключено"}
       </Status>
-      <RequestButton onClick={sendHello}>Hello request</RequestButton>
-      <RequestButton onClick={sendError}>Error request</RequestButton>
-      <RequestButton onClick={sendEvent}>Event request</RequestButton>
+      <CommandButton onClick={sendHello}>Send hello</CommandButton>
+      <CommandButton onClick={sendError}>Send error</CommandButton>
+      <CommandButton onClick={sendEvent}>Send event</CommandButton>
       <label>
         Ответ от сервера
-        <ResultTextArea readOnly value={resp} />
+        <ResultTextArea readOnly value={answer} />
       </label>
     </Root>
   );
@@ -75,7 +75,7 @@ const Status = styled.div`
   margin-bottom: 16px;
 `;
 
-const RequestButton = styled.button`
+const CommandButton = styled.button`
   display: block;
   margin-bottom: 8px;
 `;

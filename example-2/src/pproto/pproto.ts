@@ -29,7 +29,7 @@ export interface PprotoSubscription {
 
 export class PprotoConnection {
   private readonly ws: ReconnectingWebSocket;
-  private readonly requests: Record<string, Resolvable<any>> = {};
+  private readonly commands: Record<string, Resolvable<any>> = {};
   private readonly listeners: Record<string, Set<PprotoListener<any>>> = {};
 
   private _status: PprotoStatus = "disconnected";
@@ -52,7 +52,7 @@ export class PprotoConnection {
     };
   }
 
-  async request<T, R>(
+  async sendCommand<T, R>(
     command: string,
     content: T,
     timeout?: number
@@ -63,7 +63,7 @@ export class PprotoConnection {
           ? Math.round(new Date().getTime() / 1000 + timeout)
           : undefined;
 
-      const request: ProtocolMessage = {
+      const message: ProtocolMessage = {
         id: uuid(),
         command,
         content,
@@ -76,13 +76,13 @@ export class PprotoConnection {
         maxTimeLife,
         tags: [],
       };
-      this.ws.send(JSON.stringify(request));
-      this.requests[request.id] = { resolve, reject };
+      this.ws.send(JSON.stringify(message));
+      this.commands[message.id] = { resolve, reject };
 
       if (timeout !== undefined) {
         setTimeout(() => {
           reject(new TimeoutError());
-          delete this.requests[request.id];
+          delete this.commands[message.id];
         }, timeout * 1000);
       }
     });
@@ -117,19 +117,19 @@ export class PprotoConnection {
 
     switch (message.webFlags.type) {
       case "answer": {
-        const request = this.requests[message.id];
-        delete this.requests[message.id];
+        const command = this.commands[message.id];
+        delete this.commands[message.id];
 
         switch (message.webFlags.execStatus) {
           case "success": {
-            request?.resolve(message.content);
+            command?.resolve(message.content);
             break;
           }
 
           case "error":
           case "failed": {
             const error: ErrorContent = message.content;
-            request?.reject(
+            command?.reject(
               new PprotoError(error.group, error.code, error.description)
             );
           }
