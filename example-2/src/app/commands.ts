@@ -16,10 +16,19 @@ export interface EventMessage {
   eventData: number;
 }
 
+export interface ImageBase64Command {
+  index: number;
+}
+
+export interface ImageBase64Answer {
+  data: string;
+}
+
 const HELLO_COMMAND_TYPE = "b8338344-bec9-4f7d-b8e2-b81a6d4591c7";
 const TEST_COMMAND_TYPE = "59cb5357-80bb-4fa4-a15e-4797a535b50d";
 const ERROR_COMMAND_TYPE = "30d5b015-4e8f-4f53-a1a0-b36decd71f4f";
 const EVENT_COMMAND_TYPE = "33925dba-4acd-4b45-a40c-7bc97bfbe761";
+const IMAGE_BASE64_COMMAND_TYPE = "02224ccd-8bef-4473-b45b-f4d9a97f1102";
 
 export const useTestService = (): TestService => {
   const conn = usePproto();
@@ -47,5 +56,11 @@ export class TestService {
 
   async sendTest(command: TestMessage): Promise<TestMessage> {
     return this.conn.sendCommand(TEST_COMMAND_TYPE, command);
+  }
+
+  async sendImageBase64(
+    command: ImageBase64Command
+  ): Promise<ImageBase64Answer> {
+    return this.conn.sendCommand(IMAGE_BASE64_COMMAND_TYPE, command);
   }
 }
