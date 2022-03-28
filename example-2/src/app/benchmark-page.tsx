@@ -15,6 +15,12 @@ export const BenchmarkPage = () => {
     const testTime = 10000;
     let counter = 0;
 
+    await test.sendTest({
+      beginTest: true,
+      endTest: false,
+      uuid: uuid(),
+    });
+
     while (performance.now() < t1 + testTime) {
       const answers: Array<Promise<TestMessage>> = [];
 
@@ -31,6 +37,12 @@ export const BenchmarkPage = () => {
       await Promise.all(answers);
       counter += batchSize;
     }
+
+    await test.sendTest({
+      beginTest: false,
+      endTest: true,
+      uuid: uuid(),
+    });
 
     const t2 = performance.now();
     const rps = Math.round((counter / (t2 - t1)) * 1000);
