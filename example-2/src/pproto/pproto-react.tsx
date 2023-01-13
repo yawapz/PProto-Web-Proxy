@@ -37,8 +37,8 @@ export const usePprotoStatus = (): PprotoStatus => {
 
   useEffect(() => {
     const subs = [
-      pproto.on("connected", () => setStatus("connected")),
-      pproto.on("disconnected", () => setStatus("disconnected")),
+      pproto.onEvent("connected", () => setStatus("connected")),
+      pproto.onEvent("disconnected", () => setStatus("disconnected")),
     ];
     return () => {
       subs.forEach((s) => s.unsubscribe());

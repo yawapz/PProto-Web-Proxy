@@ -21,7 +21,7 @@ export class TimeoutError extends Error {
   }
 }
 
-export type PprotoListener<T> = (data: T) => void;
+export type PprotoListener<T, R> = (data: T) => R;
 
 export interface PprotoSubscription {
   unsubscribe(): void;
@@ -30,7 +30,9 @@ export interface PprotoSubscription {
 export class PprotoConnection {
   private readonly ws: ReconnectingWebSocket;
   private readonly commands: Record<string, Resolvable<any>> = {};
-  private readonly listeners: Record<string, Set<PprotoListener<any>>> = {};
+  private readonly listeners: Record<string, Set<PprotoListener<any, void>>> =
+    {};
+  private readonly handlers: Record<string, PprotoListener<any, any>> = {};
 
   private _status: PprotoStatus = "disconnected";
   get status() {
@@ -88,14 +90,20 @@ export class PprotoConnection {
     });
   }
 
-  on(
+  onEvent(
     type: "connected" | "disconnected",
-    listener: PprotoListener<PprotoConnection>
+    listener: PprotoListener<PprotoConnection, void>
   ): PprotoSubscription;
 
-  on<T>(type: string, listener: PprotoListener<T>): PprotoSubscription;
+  onEvent<T>(
+    type: string,
+    listener: PprotoListener<T, void>
+  ): PprotoSubscription;
 
-  on(type: string, listener: PprotoListener<any>): PprotoSubscription {
+  onEvent(
+    type: string,
+    listener: PprotoListener<any, void>
+  ): PprotoSubscription {
     let listeners = this.listeners[type];
     if (!listeners) {
       listeners = new Set();
@@ -106,6 +114,10 @@ export class PprotoConnection {
     return {
       unsubscribe: () => listeners?.delete(listener),
     };
+  }
+
+  commandHandler<T, R>(type: string, handler: PprotoListener<T, Promise<R>>) {
+    this.handlers[type] = handler;
   }
 
   close() {
@@ -140,6 +152,44 @@ export class PprotoConnection {
       case "event": {
         this.notifyListeners(message.command, message.content);
         break;
+      }
+
+      case "command": {
+        const handler = this.handlers[message.command];
+        if (handler) {
+          (async () => {
+            try {
+              const answer = await handler(message.content);
+              const response: ProtocolMessage = {
+                id: message.id,
+                command: message.command,
+                content: answer,
+                webFlags: {
+                  type: "answer",
+                  execStatus: "success",
+                  priority: "normal",
+                  contentFormat: "json",
+                },
+                tags: [],
+              };
+              this.ws.send(JSON.stringify(response));
+            } catch (e) {
+              const response: ProtocolMessage = {
+                id: message.id,
+                command: message.command,
+                content: null,
+                webFlags: {
+                  type: "answer",
+                  execStatus: "failed",
+                  priority: "normal",
+                  contentFormat: "json",
+                },
+                tags: [],
+              };
+              this.ws.send(JSON.stringify(response));
+            }
+          })();
+        }
       }
     }
   }

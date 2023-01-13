@@ -51,7 +51,7 @@ export class TestService {
   }
 
   onEvent(listener: (event: EventMessage) => void): PprotoSubscription {
-    return this.conn.on(EVENT_COMMAND_TYPE, listener);
+    return this.conn.onEvent(EVENT_COMMAND_TYPE, listener);
   }
 
   async sendTest(command: TestMessage): Promise<TestMessage> {
