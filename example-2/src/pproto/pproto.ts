@@ -3,6 +3,14 @@ import { v4 as uuid } from "uuid";
 
 export type PprotoStatus = "connected" | "disconnected";
 
+export const CLOSE_CONNECTION_COMMAND = "e71921fd-e5b3-4f9b-8be7-283e8bb2a531";
+
+export interface CloseConnectionCommand {
+  group: number;
+  code: string;
+  description: string;
+}
+
 export class PprotoError extends Error {
   constructor(
     public readonly group: number,
@@ -120,7 +128,13 @@ export class PprotoConnection {
     this.handlers[type] = handler;
   }
 
-  close() {
+  async close(command?: CloseConnectionCommand) {
+    command = command ?? {
+      group: 0,
+      code: "",
+      description: "",
+    };
+    this.sendCommand(CLOSE_CONNECTION_COMMAND, command);
     return this.ws.close();
   }
 
