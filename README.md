@@ -1,10 +1,24 @@
-# Демонстрационный проект с примерами использования протокола [PProto](https://github.com/hkarel/PProtoCpp) для WEB
+## Зависимости
 
-Проект содержит: 
+ - nodejs 12+
+ - npm 7+
 
-- [Proxy-сервис](https://github.com/hkarel/PProtoDemoWeb/tree/master/proxy) для взаимодействия с целевым сервисом через протокол [PProto](https://github.com/hkarel/PProtoCpp);
-- Примеры web-клиентов, которые подключаются к Proxy-сервису через WebSocket: 
-  - [example-1](https://github.com/hkarel/PProtoDemoWeb/tree/master/example-1) Простейший пример на чистом JavaScript;
-  - [example-2](https://github.com/hkarel/PProtoDemoWeb/tree/master/example-2) Пример на ReactJS.
+## Установка
 
-Тестовая реализация целевого сервиса на C++ находится в проекте [PProtoDemo](https://github.com/hkarel/PProtoDemo), см. пример [WDemo 01 Server](https://github.com/hkarel/PProtoDemo/tree/master/src/demo/web/wdemo01_server).
+```bash
+npm install
+```
+
+## Запуск прокси
+
+```
+npm run start
+```
+
+Переменные окружения:
+ - ORIGIN_PORT - Порт, на котором запущен проксируемый TCP-сервер, по умолчанию 28052.
+ - ORIGIN_HOST - Хост TCP-сервера, по умолчанию localhost.
+ - PROXY_PORT - Порт прокси, на котором будет слушать WebSocket, по умолчанию 9000.
+ - PROXY_HOST - Хост прокси, по умолчанию localhost.
+ - SOCKET_TIMEOUT - Таймаут установки соединения с TCP-сервером, в миллисекундах, по умолчанию 1000 мс.
+
